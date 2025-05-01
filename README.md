@@ -11,6 +11,9 @@ A conceptual design and partial implementation of a music streaming platform, sh
 ### 3. Portfolio Website for Insurance Advisor
 A responsive and accessible web portfolio designed for an insurance advisor client.
 
+### 4. Tic-Tac-Toe 
+A simpler game web app.
+
 ## 🛠️ Tech Stack
 
 - C++, Java, Python
