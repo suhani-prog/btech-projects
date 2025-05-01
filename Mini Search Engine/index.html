@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Search Engine</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    input {
+      width: 250px;
+    }
+    button {
+      background-color: #001f1f;
+      color: #00ffff;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    button:hover {
+      background-color: #004d4d;
+    }
+    #output {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #e0ffff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mini Search Engine</h1>
+  <input type="text" id="wordInput" placeholder="Enter word or prefix">
+  <input type="text" id="newWordInput" placeholder="Enter new word (for update)">
+  <br>
+  <button onclick="insertWord()">Insert</button>
+  <button onclick="searchWord()">Search</button>
+  <button onclick="suggestWords()">Get Suggestions</button>
+  <button onclick="updateWord()">Update</button>
+  <button onclick="deleteWord()">Delete</button>
+
+  <div id="output"></div>
+
+  <script>
+    const trie = {};
+
+    function insertWord() {
+      const word = document.getElementById("wordInput").value.toLowerCase();
+      let node = trie;
+      for (let char of word) {
+        if (!node[char]) node[char] = {};
+        node = node[char];
+      }
+      node.isEndOfWord = true;
+      node.frequency = (node.frequency || 0) + 1;
+      showOutput(`Inserted "${word}" successfully.`);
+    }
+
+    function searchWord() {
+      const word = document.getElementById("wordInput").value.toLowerCase();
+      let node = trie;
+      for (let char of word) {
+        if (!node[char]) return showOutput("Word not found.");
+        node = node[char];
+      }
+      if (node.isEndOfWord) {
+        showOutput(`Word found. Frequency: ${node.frequency}`);
+      } else {
+        showOutput("Word not found.");
+      }
+    }
+
+    function suggestWords() {
+      const prefix = document.getElementById("wordInput").value.toLowerCase();
+      let node = trie;
+      for (let char of prefix) {
+        if (!node[char]) return showOutput("No suggestions found.");
+        node = node[char];
+      }
+      const results = [];
+      suggestionsHelper(node, prefix, results);
+      results.sort((a, b) => b.frequency - a.frequency);
+      let msg = results.length
+        ? `Suggestions for "${prefix}":<br>` + results.map(r => `• ${r.word} (used ${r.frequency} times)`).join("<br>")
+        : "No suggestions found.";
+      showOutput(msg);
+    }
+
+    function suggestionsHelper(node, currentWord, results) {
+      if (!node) return;
+      if (node.isEndOfWord) {
+        results.push({ word: currentWord, frequency: node.frequency });
+      }
+      for (let char in node) {
+        if (char.length === 1) {
+          suggestionsHelper(node[char], currentWord + char, results);
+        }
+      }
+    }
+
+    function updateWord() {
+      const oldWord = document.getElementById("wordInput").value.toLowerCase();
+      const newWord = document.getElementById("newWordInput").value.toLowerCase();
+      if (deleteHelper(trie, oldWord, 0)) {
+        document.getElementById("wordInput").value = newWord;
+        insertWord();
+        showOutput(`Updated "${oldWord}" to "${newWord}"`);
+      } else {
+        showOutput(`Word "${oldWord}" not found for update.`);
+      }
+    }
+
+    function deleteWord() {
+      const word = document.getElementById("wordInput").value.toLowerCase();
+      const deleted = deleteHelper(trie, word, 0);
+      showOutput(deleted ? `Deleted "${word}" successfully.` : `"${word}" not found.`);
+    }
+
+    function deleteHelper(node, word, index) {
+      if (index === word.length) {
+        if (!node.isEndOfWord) return false;
+        delete node.isEndOfWord;
+        delete node.frequency;
+        return Object.keys(node).length === 0;
+      }
+      const char = word[index];
+      if (!node[char]) return false;
+      const shouldDeleteChild = deleteHelper(node[char], word, index + 1);
+      if (shouldDeleteChild) {
+        delete node[char];
+        return Object.keys(node).length === 0;
+      }
+      return false;
+    }
+
+    function showOutput(message) {
+      document.getElementById("output").innerHTML = message;
+    }
+  </script>
+</body>
+</html>
