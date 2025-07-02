@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Chat Mockup</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="chat-container">
+      <div class="chat-header">MockupChat</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="typing-indicator" id="typingIndicator">Someone is typing...</div>
+      <div class="chat-input-area">
+        <select id="usernameSelect">
+          <option value="Alice">Alice</option>
+          <option value="Bob">Bob</option>
+          <option value="Charlie">Charlie</option>
+        </select>
+        <input type="text" id="chatInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+   <a href="https://github.com/suhani-prog" target="_blank" class="github-icon">
+        <img src="github-icon.png" alt="GitHub">
+    </a>
+
+</body>
+</html>
